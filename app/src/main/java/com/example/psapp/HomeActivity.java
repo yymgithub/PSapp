@@ -1,9 +1,9 @@
 package com.example.psapp;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -20,8 +20,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private FrameLayout ly_content;
 
-    private FirstFragment f1,f3,f4;
+    private FirstFragment f1,f4;
     private SecondFragment f2;
+    private ThreeFragment f3;
     private FragmentManager fragmentManager;
 
     @Override
@@ -72,7 +73,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        android.app.FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         hideAllFragment(transaction);
         switch(v.getId()){
             case R.id.txt_deal:
@@ -101,7 +102,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 selected();
                 tabManc.setSelected(true);
                 if(f3==null){
-                    f3 = new FirstFragment("第三个Fragment");
+                    f3 = new ThreeFragment();
                     transaction.add(R.id.fragment_container,f3);
                 }else{
                     transaction.show(f3);

@@ -1,12 +1,11 @@
 package com.example.psapp;
 
-import android.app.Fragment;
-import android.content.Intent;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,21 +15,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.example.psapp.bean.PsBench;
 import com.example.psapp.bean.PsParameter;
-import com.example.psapp.bean.User;
 
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
-import static android.R.id.list;
-
-public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private String context;
     private TextView mTextView;
     private ListView listView;
@@ -41,13 +35,15 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     protected static final int ERRORNET = 1;
 
     private MyApplication myApplication;
-    public  FirstFragment(String context){
+
+    public FirstFragment(String context) {
         this.context = context;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.first_fragment,container,false);
-        listView = (ListView)view.findViewById(R.id.list_view);
+        View view = inflater.inflate(R.layout.first_fragment, container, false);
+        listView = (ListView) view.findViewById(R.id.list_view);
         myApplication = (MyApplication) this.getActivity().getApplication();
         getData();
         //初始化下拉刷新
@@ -56,6 +52,7 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
         swipeLayout.setOnRefreshListener(this);
         return view;
     }
+
     private Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
@@ -67,17 +64,18 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     break;
                 case SUCCESS:
                     List<PsParameter> psParameterList = (List<PsParameter>) msg.obj;
-                    listView.setAdapter(new ParaAdapter(getActivity(),R.layout.parameter_item,psParameterList));
+                    listView.setAdapter(new ParaAdapter(getActivity(), R.layout.parameter_item, psParameterList));
                     break;
             }
         }
     };
-    public void getData(){
+
+    public void getData() {
         new Thread() {
             public void run() {
                 try {
-                    Integer psId=myApplication.getNowPsBench().getPsId();
-                    String path = "http://192.168.1.107:8080/home/appGetPara?psId=" +psId ;
+                    Integer psId = myApplication.getNowPsBench().getPsId();
+                    String path = "http://192.168.1.107:8080/home/appGetPara?psId=" + psId;
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
@@ -93,8 +91,8 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                             String psParameterListString = data.getString("psParameterList");
                             List<PsParameter> psParameterList = JSON.parseArray(psParameterListString, PsParameter.class);
                             JSONObject psBench = (JSONObject) data.get("psBench");
-                            Integer psStop=psBench.getInt("psStop");
-                            Integer psAlarm=psBench.getInt("psAlarm");
+                            Integer psStop = psBench.getInt("psStop");
+                            Integer psAlarm = psBench.getInt("psAlarm");
                             myApplication.getNowPsBench().setPsStop(psStop);
                             myApplication.getNowPsBench().setPsAlarm(psAlarm);
                             Message msg = Message.obtain();

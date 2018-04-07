@@ -8,4 +8,6 @@
     <color name="text_gray">#8A8A8A</color>
     <color name="transparent">#00000000</color>
     <color name="text_blue">#B4C1FF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#C0C0C0</color>
 </resources>
