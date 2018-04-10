@@ -1,10 +1,8 @@
 package com.example.psapp;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSeekBar;
@@ -15,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -25,23 +22,19 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.example.psapp.bean.PsDrive;
-import com.example.psapp.bean.PsParameter;
 
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.List;
 
 /**
- * Created by 永远有多远 on 2018/4/3.
+ * Created by 永远有多远 on 2018/4/10.
  */
 
-public class ThreeFirstFragment extends Fragment {
+public class ThreeSecondFragment extends Fragment {
     private TextView mTv;
     private String context;
     private RadioGroup radioGroup;
@@ -53,6 +46,13 @@ public class ThreeFirstFragment extends Fragment {
     private TextView revese_img;
     private AppCompatSeekBar sb_pressure;
     private AppCompatEditText et_pressure;
+    private Switch remote_switch2;
+    private Switch revese_switch2;
+    private TextView input_speed2;
+    private TextView remote_img2;
+    private TextView revese_img2;
+    private AppCompatSeekBar sb_pressure2;
+    private AppCompatEditText et_pressure2;
     private EditText dr_time;
     private Button submitButton;
     private int pressure = 0, _pressure = 0;// 数值
@@ -64,7 +64,7 @@ public class ThreeFirstFragment extends Fragment {
     PsDrive psDrive = new PsDrive();
 
 
-    public ThreeFirstFragment(String context) {
+    public ThreeSecondFragment(String context) {
 
         this.context = context;
 
@@ -72,7 +72,7 @@ public class ThreeFirstFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.three_first_fragment, container, false);
+        View view = inflater.inflate(R.layout.three_second_fragment, container, false);
         //初始化控件
         myApplication = (MyApplication) this.getActivity().getApplication();
         radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
@@ -92,7 +92,20 @@ public class ThreeFirstFragment extends Fragment {
 
         sb_pressure.setMax(50000);// 设置进度条可调节的数值范围长度，参数为int类型
         et_pressure.setText("0");// 设置初始显示值
-        dr_time.setText("0");
+
+
+        sb_pressure2 = (AppCompatSeekBar) view.findViewById(R.id.sb_pressure2);
+        et_pressure2= (AppCompatEditText) view.findViewById(R.id.et_pressure2);
+        et_pressure2.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+
+        remote_switch2 = (Switch) view.findViewById(R.id.remote_switch2);
+        revese_switch2 = (Switch) view.findViewById(R.id.revese_switch2);
+        input_speed2 = (TextView) view.findViewById(R.id.input_textView2);
+        remote_img2 = (TextView) view.findViewById(R.id.remote_image2);
+        revese_img2 = (TextView) view.findViewById(R.id.revase_image2);
+        sb_pressure2.setProgress(0);// 先将进度条滑到最左端
+        sb_pressure2.setMax(50000);// 设置进度条可调节的数值范围长度，参数为int类型
+        et_pressure2.setText("0");// 设置初始显示值
         init();
 
         return view;
@@ -115,13 +128,6 @@ public class ThreeFirstFragment extends Fragment {
     };
 
     void init() {
-        psDrive.setDrMode(0);
-        psDrive.setDrRamptime(0);
-        psDrive.setDrLoad(0);
-        psDrive.setDrRemotestatus(0);
-        psDrive.setDrReverse(0);
-        psDrive.setPhoneId(myApplication.getUser().getPhoneId());
-        psDrive.setPsId(myApplication.getNowPsBench().getPsId());
         sb_pressure.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -303,6 +309,103 @@ public class ThreeFirstFragment extends Fragment {
                 }.start();
             }
         });
+
+
+        sb_pressure2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int p;
+                int gewei = progress % 10;
+                String str = "";
+                if (gewei != 0) {
+                    double result = (double) progress / 10;
+                    str = "" + result;
+                } else {
+                    int result = progress / 10;
+                    str = "" + result;
+                }
+                et_pressure2.setText(str);
+                et_pressure2.setSelection(et_pressure2.getText().length());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+
+        et_pressure2.addTextChangedListener(new EditTextJudgeNumberWatcher(et_pressure2) {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                judgeNumber(s, et_pressure2);
+                String toast = "";
+                double p = 0;
+                try {
+                    p = Double.parseDouble(s.toString());
+                } catch (Exception e) {
+                    p = 0;
+                }
+
+                if (p < 0 || p > 5000) {
+                    toast = "数值范围：0~5000";
+                    sb_pressure2.setProgress(0);
+                } else {
+                    toast = "";
+                    psDrive.setDrLoad(p);
+                    int temp = (int) (p * 10);
+                    sb_pressure2.setProgress(temp);
+                    _pressure = temp;// 记录新修改的pressure值
+                }
+                if (!"".equals(toast)) {
+                    Toast.makeText(getActivity(), toast, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+        revese_switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    input_speed2.setText("转速：");
+                    revese_img2.setPressed(true);
+                    psDrive.setDrReverse(1);
+
+                } else {
+                    input_speed2.setText("给定负载转速：");
+                    revese_img2.setPressed(false);
+                    psDrive.setDrReverse(0);
+                }
+            }
+        });
+
+        remote_switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    remote_img2.setPressed(true);
+                    psDrive.setDrRemotestatus(1);
+
+                } else {
+                    remote_img2.setPressed(false);
+                    psDrive.setDrRemotestatus(0);
+                }
+            }
+        });
+
 
     }
 

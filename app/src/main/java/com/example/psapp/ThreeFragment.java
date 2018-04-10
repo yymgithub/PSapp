@@ -51,12 +51,13 @@ public class ThreeFragment  extends Fragment {
         mTb.addTab(mTb.newTab().setText(mTitleList.get(0)));
         mTb.addTab(mTb.newTab().setText(mTitleList.get(1)));
         mTb.addTab(mTb.newTab().setText(mTitleList.get(2)));
+        mTb.addTab(mTb.newTab().setText(mTitleList.get(3)));
     }
 
     private void initFragment() {
         mFragmentList = new ArrayList<>();
         mFragmentList.add(new ThreeFirstFragment("第一个界面"));
-        mFragmentList.add(new ThreeFirstFragment("第二个界面"));
+        mFragmentList.add(new ThreeSecondFragment("第二个界面"));
         mFragmentList.add(new ThreeFirstFragment("第三个界面"));
         mFragmentList.add(new ThreeFirstFragment("第三个界面"));
     }

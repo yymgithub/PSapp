@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/three_second_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="60pt"
+            android:layout_height="20dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="模式选择："
+            android:textSize="16dp" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="80pt"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="550px"
+            android:layout_marginTop="21dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/btn1"
+                android:layout_width="55dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/radiobutton_background"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:text="P1/P"
+                android:textColor="@color/radiobutton_textcolor"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/btn2"
+                android:layout_width="55dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="30dp"
+                android:background="@drawable/radiobutton_background"
+                android:button="@null"
+                android:gravity="center"
+                android:text="n1/P"
+                android:textColor="@color/radiobutton_textcolor"
+                android:textSize="14sp" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="46dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="18dp"
+                android:gravity="center"
+                android:text="斜坡时间："
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/dr_time"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="69dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:gravity="center"
+                android:text="秒"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="110dp"
+            android:background="@color/whitesmoke"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:gravity="center"
+                android:text="负载1"
+                android:textSize="16sp"
+                android:padding="10dp"/>
+            <LinearLayout
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:gravity="center"
+                    android:text="远程："
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/remote_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:gravity="center"
+                    android:drawableLeft="@drawable/open_close"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:gravity="center"
+                    android:text="反转："
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/revase_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:gravity="center"
+                    android:drawableLeft="@drawable/open_close"
+                    android:textSize="16sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/whitesmoke"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/input_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:gravity="center"
+                    android:text="给定负载转速："
+                    android:textSize="16sp" />
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/et_pressure"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="3"
+                    android:background="@drawable/shape"
+                    android:inputType="number|numberDecimal"
+                    android:maxLength="6" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="4"
+                    android:gravity="center"
+                    android:text="r/min"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <android.support.v7.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="20dp">
+
+                <android.support.v7.widget.AppCompatSeekBar
+                    android:id="@+id/sb_pressure"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:maxHeight="4.0dip"
+                    android:minHeight="4.0dip"
+                    android:paddingLeft="16.0dip"
+                    android:paddingRight="16.0dip"
+                    android:progressDrawable="@drawable/po_seekbar"
+                    android:thumb="@drawable/seekbar_thumb" />
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:background="@color/whitesmoke"
+                android:orientation="horizontal"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="是否远程："
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/remote_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="130dp"
+                    android:switchMinWidth="15dp"
+                    android:textOff="  "
+                    android:textOn="  "
+                    android:thumb="@drawable/thumb"
+                    android:track="@drawable/track" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@color/whitesmoke"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="是否反转："
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/revese_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="130dp"
+                    android:switchMinWidth="20dp"
+                    android:textOff="  "
+                    android:textOn="  "
+                    android:thumb="@drawable/thumb"
+                    android:track="@drawable/track" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="390dp"
+            android:background="@color/whitesmoke"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:gravity="center"
+                android:text="负载2"
+                android:textSize="16sp"
+                android:padding="10dp"/>
+            <LinearLayout
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:gravity="center"
+                    android:text="远程："
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/remote_image2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:gravity="center"
+                    android:drawableLeft="@drawable/open_close"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:gravity="center"
+                    android:text="反转："
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/revase_image2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:gravity="center"
+                    android:drawableLeft="@drawable/open_close"
+                    android:textSize="16sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/whitesmoke"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/input_textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:gravity="center"
+                    android:text="给定负载转速："
+                    android:textSize="16sp" />
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/et_pressure2"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="3"
+                    android:background="@drawable/shape"
+                    android:inputType="number|numberDecimal"
+                    android:maxLength="6" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="4"
+                    android:gravity="center"
+                    android:text="r/min"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <android.support.v7.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="20dp">
+
+                <android.support.v7.widget.AppCompatSeekBar
+                    android:id="@+id/sb_pressure2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:maxHeight="4.0dip"
+                    android:minHeight="4.0dip"
+                    android:paddingLeft="16.0dip"
+                    android:paddingRight="16.0dip"
+                    android:progressDrawable="@drawable/po_seekbar"
+                    android:thumb="@drawable/seekbar_thumb" />
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:background="@color/whitesmoke"
+                android:orientation="horizontal"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="是否远程："
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/remote_switch2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="130dp"
+                    android:switchMinWidth="15dp"
+                    android:textOff="  "
+                    android:textOn="  "
+                    android:thumb="@drawable/thumb"
+                    android:track="@drawable/track" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@color/whitesmoke"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="是否反转："
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/revese_switch2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="130dp"
+                    android:switchMinWidth="20dp"
+                    android:textOff="  "
+                    android:textOn="  "
+                    android:thumb="@drawable/thumb"
+                    android:track="@drawable/track" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="650dp"
+            android:orientation="vertical"
+            >
+            <Button
+                android:id="@+id/submit_button"
+                android:layout_width="260dip"
+                android:layout_height="40dip"
+                android:layout_marginLeft="50dip"
+                android:background="@drawable/selector_bg_btn"
+                android:gravity="center"
+                android:text="给定"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                />
+            <TextView
+                android:paddingTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text=""
+                android:textSize="16sp" />
+        </LinearLayout>
+    </RelativeLayout>
+</ScrollView>
