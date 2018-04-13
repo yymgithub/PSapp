@@ -69,8 +69,7 @@
                 android:id="@+id/dr_time"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="69dp"
-                />
+                android:layout_marginLeft="69dp" />
 
             <TextView
                 android:layout_width="wrap_content"

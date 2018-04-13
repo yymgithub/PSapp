@@ -58,8 +58,8 @@ public class ThreeFragment  extends Fragment {
         mFragmentList = new ArrayList<>();
         mFragmentList.add(new ThreeFirstFragment("第一个界面"));
         mFragmentList.add(new ThreeSecondFragment("第二个界面"));
-        mFragmentList.add(new ThreeFirstFragment("第三个界面"));
-        mFragmentList.add(new ThreeFirstFragment("第三个界面"));
+        mFragmentList.add(new ThreeThirdFragemnt("第三个界面"));
+        mFragmentList.add(new ThreeFourFragment("第四个界面"));
     }
 
     private void initView(View view) {

@@ -20,9 +20,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private FrameLayout ly_content;
 
-    private FirstFragment f1,f4;
+    private FirstFragment f1;
     private SecondFragment f2;
     private ThreeFragment f3;
+    private FourFragment f4;
+    private SecondFragment f5;
     private FragmentManager fragmentManager;
 
     @Override
@@ -45,6 +47,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         tabManc.setOnClickListener(this);
         tabCom.setOnClickListener(this);
 
+        getSupportActionBar().hide();
     }
 
     //重置所有文本的选中状态
@@ -68,6 +71,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         if(f4!=null){
             transaction.hide(f4);
+        }
+        if(f5!=null){
+            transaction.hide(f5);
         }
     }
 
@@ -112,7 +118,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 selected();
                 tabMore.setSelected(true);
                 if(f4==null){
-                    f4 = new FirstFragment("第四个Fragment");
+                    f4 = new FourFragment();
                     transaction.add(R.id.fragment_container,f4);
                 }else{
                     transaction.show(f4);
@@ -120,6 +126,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
 
+        transaction.commit();
+    }
+
+
+    public void gotoDownloadFragment() {    //去下载页面
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        hideAllFragment(transaction);
+        if(f5==null){
+            f5 = new SecondFragment();
+            transaction.add(R.id.fragment_container,f5);
+        }else{
+            transaction.show(f5);
+        }
         transaction.commit();
     }
 }

@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.psapp.bean.PsDrive;
+import com.example.psapp.bean.PsLoad;
 
 import org.json.JSONObject;
 
@@ -61,7 +62,7 @@ public class ThreeSecondFragment extends Fragment {
     protected static final int ERRORNET = 1;
     private MyApplication myApplication;
 
-    PsDrive psDrive = new PsDrive();
+    PsLoad psLoad=new PsLoad();
 
 
     public ThreeSecondFragment(String context) {
@@ -76,18 +77,18 @@ public class ThreeSecondFragment extends Fragment {
         //初始化控件
         myApplication = (MyApplication) this.getActivity().getApplication();
         radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
+        dr_time = (EditText) view.findViewById(R.id.dr_time);
 
         sb_pressure = (AppCompatSeekBar) view.findViewById(R.id.sb_pressure);
         et_pressure = (AppCompatEditText) view.findViewById(R.id.et_pressure);
         et_pressure.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-
         remote_switch = (Switch) view.findViewById(R.id.remote_switch);
         revese_switch = (Switch) view.findViewById(R.id.revese_switch);
         input_speed = (TextView) view.findViewById(R.id.input_textView);
         remote_img = (TextView) view.findViewById(R.id.remote_image);
         revese_img = (TextView) view.findViewById(R.id.revase_image);
-        dr_time = (EditText) view.findViewById(R.id.dr_time);
-        submitButton = (Button) view.findViewById(R.id.submit_button);
+
+
         sb_pressure.setProgress(0);// 先将进度条滑到最左端
 
         sb_pressure.setMax(50000);// 设置进度条可调节的数值范围长度，参数为int类型
@@ -97,7 +98,6 @@ public class ThreeSecondFragment extends Fragment {
         sb_pressure2 = (AppCompatSeekBar) view.findViewById(R.id.sb_pressure2);
         et_pressure2= (AppCompatEditText) view.findViewById(R.id.et_pressure2);
         et_pressure2.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-
         remote_switch2 = (Switch) view.findViewById(R.id.remote_switch2);
         revese_switch2 = (Switch) view.findViewById(R.id.revese_switch2);
         input_speed2 = (TextView) view.findViewById(R.id.input_textView2);
@@ -106,6 +106,7 @@ public class ThreeSecondFragment extends Fragment {
         sb_pressure2.setProgress(0);// 先将进度条滑到最左端
         sb_pressure2.setMax(50000);// 设置进度条可调节的数值范围长度，参数为int类型
         et_pressure2.setText("0");// 设置初始显示值
+        submitButton = (Button) view.findViewById(R.id.submit_button);
         init();
 
         return view;
@@ -128,6 +129,17 @@ public class ThreeSecondFragment extends Fragment {
     };
 
     void init() {
+
+        psLoad.setPsId(myApplication.getNowPsBench().getPsId());
+        psLoad.setPhoneId(myApplication.getUser().getPhoneId());
+        psLoad.setLoMode(0);
+        psLoad.setLoRamptime(0);
+        psLoad.setLo1Speed(0);
+        psLoad.setLo1Reverse(0);
+        psLoad.setLo1Remote(0);
+        psLoad.setLo2Speed(0);
+        psLoad.setLo2Reverse(0);
+        psLoad.setLo2Remote(0);
         sb_pressure.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -160,10 +172,10 @@ public class ThreeSecondFragment extends Fragment {
                 radioButton = (RadioButton) group.findViewById(checkedId);
                 String result = radioButton.getText().toString();
                 if (result.equals("P1/P")) {
-                    psDrive.setDrMode(0);
+                    psLoad.setLoMode(0);
 
                 } else if (result.equals("n1/P")) {
-                    psDrive.setDrMode(1);
+                    psLoad.setLoMode(1);
                 }
             }
         });
@@ -183,9 +195,9 @@ public class ThreeSecondFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 //Toast.makeText(getActivity(),dr_time.getText().toString(),Toast.LENGTH_SHORT).show();
                 if (!"".equals(dr_time.getText().toString())){
-                    psDrive.setDrRamptime(Integer.valueOf(dr_time.getText().toString()));
+                    psLoad.setLoRamptime(Integer.valueOf(dr_time.getText().toString()));
                 }else {
-                    psDrive.setDrRamptime(Integer.valueOf("0"));
+                    psLoad.setLoRamptime(Integer.valueOf("0"));
                 }
             }
         });
@@ -216,7 +228,7 @@ public class ThreeSecondFragment extends Fragment {
                     sb_pressure.setProgress(0);
                 } else {
                     toast = "";
-                    psDrive.setDrLoad(p);
+                    psLoad.setLo1Speed(p);
                     int temp = (int) (p * 10);
                     sb_pressure.setProgress(temp);
                     _pressure = temp;// 记录新修改的pressure值
@@ -234,12 +246,12 @@ public class ThreeSecondFragment extends Fragment {
                 if (isChecked) {
                     input_speed.setText("转速：");
                     revese_img.setPressed(true);
-                    psDrive.setDrReverse(1);
+                    psLoad.setLo1Reverse(1);
 
                 } else {
                     input_speed.setText("给定负载转速：");
                     revese_img.setPressed(false);
-                    psDrive.setDrReverse(0);
+                    psLoad.setLo1Reverse(0);
                 }
             }
         });
@@ -249,11 +261,11 @@ public class ThreeSecondFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     remote_img.setPressed(true);
-                    psDrive.setDrRemotestatus(1);
+                    psLoad.setLo1Remote(1);
 
                 } else {
                     remote_img.setPressed(false);
-                    psDrive.setDrRemotestatus(0);
+                    psLoad.setLo1Remote(0);
                 }
             }
         });
@@ -267,7 +279,7 @@ public class ThreeSecondFragment extends Fragment {
                         try {
                             Integer psId = myApplication.getNowPsBench().getPsId();
                             String phoneId=myApplication.getUser().getPhoneId();
-                            String path = "http://192.168.1.107:8080/home/manc/drive"+psDrive.toString();
+                            String path = "http://192.168.1.107:8080/home/manc/load"+psLoad.toString();
                             URL url = new URL(path);
                             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                             conn.setRequestMethod("GET");
@@ -364,7 +376,7 @@ public class ThreeSecondFragment extends Fragment {
                     sb_pressure2.setProgress(0);
                 } else {
                     toast = "";
-                    psDrive.setDrLoad(p);
+                   psLoad.setLo2Speed(p);
                     int temp = (int) (p * 10);
                     sb_pressure2.setProgress(temp);
                     _pressure = temp;// 记录新修改的pressure值
@@ -382,12 +394,12 @@ public class ThreeSecondFragment extends Fragment {
                 if (isChecked) {
                     input_speed2.setText("转速：");
                     revese_img2.setPressed(true);
-                    psDrive.setDrReverse(1);
+                    psLoad.setLo2Reverse(1);
 
                 } else {
                     input_speed2.setText("给定负载转速：");
                     revese_img2.setPressed(false);
-                    psDrive.setDrReverse(0);
+                    psLoad.setLo2Reverse(0);
                 }
             }
         });
@@ -397,11 +409,11 @@ public class ThreeSecondFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     remote_img2.setPressed(true);
-                    psDrive.setDrRemotestatus(1);
+                    psLoad.setLo2Remote(1);
 
                 } else {
                     remote_img2.setPressed(false);
-                    psDrive.setDrRemotestatus(0);
+                    psLoad.setLo2Remote(0);
                 }
             }
         });

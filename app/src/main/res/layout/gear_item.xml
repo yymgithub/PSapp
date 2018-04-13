@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:minHeight="50dp">
+
+    <TextView
+        android:id="@+id/gear_name"
+        android:layout_width="0dp"
+        android:layout_height="70px"
+        android:layout_weight="2"
+        android:paddingTop="10px"
+        android:text="查看参数"
+        android:textSize="18sp"
+        android:layout_marginLeft="20dp"/>
+    </LinearLayout>
