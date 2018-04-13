@@ -1,9 +1,10 @@
 package com.example.psapp;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -11,26 +12,39 @@ import android.widget.Toast;
  * Created by 永远有多远 on 2018/4/13.
  */
 
-public class TitleActivity extends Activity implements View.OnClickListener {
+public class TitleActivity extends AppCompatActivity implements View.OnClickListener{
 
     //private RelativeLayout mLayoutTitleBar;
     private TextView mTitleTextView;
-    private Button mBackwardbButton;
+    private TextView txt_signout;
+    private TextView txt_backward;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.layout_title);
         setupViews();   //加载 activity_title 布局 ，并获取标题及两侧按钮
     }
 
 
     private void setupViews() {
-        super.setContentView(R.layout.layout_title);
         mTitleTextView = (TextView) findViewById(R.id.text_title);
-        mBackwardbButton = (Button) findViewById(R.id.button_backward);
-        showBackwardView(R.id.button_backward, true);
+        txt_signout = (TextView) findViewById(R.id.txt_signout);
+//        txt_backward= (TextView) findViewById(R.id.txt_backward);
+
+        txt_signout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(TitleActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
+
+//      txt_backward.setVisibility(View.INVISIBLE);
+//                txt_signout.setVisibility(View.VISIBLE);
 
     /**
      * 是否显示返回按钮
@@ -38,16 +52,16 @@ public class TitleActivity extends Activity implements View.OnClickListener {
      * @param backwardResid 文字
      * @param show          true则显示
      */
-    protected void showBackwardView(int backwardResid, boolean show) {
-        if (mBackwardbButton != null) {
-            if (show) {
-                mBackwardbButton.setText(backwardResid);
-                mBackwardbButton.setVisibility(View.VISIBLE);
-            } else {
-                mBackwardbButton.setVisibility(View.INVISIBLE);
-            }
-        } // else ignored
-    }
+//    protected void showBackwardView(int backwardResid, boolean show) {
+//        if (mBackwardbButton != null) {
+//            if (show) {
+//                mBackwardbButton.setText(backwardResid);
+//                mBackwardbButton.setVisibility(View.VISIBLE);
+//            } else {
+//                mBackwardbButton.setVisibility(View.INVISIBLE);
+//            }
+//        } // else ignored
+//    }
 
 
     /**
@@ -88,20 +102,32 @@ public class TitleActivity extends Activity implements View.OnClickListener {
         mTitleTextView.setTextColor(textColor);
     }
 
-
-    /* (non-Javadoc)
-     * @see android.view.View.OnClickListener#onClick(android.view.View)
-     * 按钮点击调用的方法
-     */
     @Override
     public void onClick(View v) {
-
         switch (v.getId()) {
-            case R.id.button_backward:
-                onBackward(v);
+            case R.id.txt_signout:
+                Toast.makeText(this, "退出登录", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;
         }
     }
+
+
+    /* (non-Javadoc)
+     * @see android.view.View.OnClickListener#onClick(android.view.View)
+     * 按钮点击调用的方法
+     */
+//    @Override
+//    public void onClick(View v) {
+//
+//        switch (v.getId()) {
+//            case R.id.txt_signout:
+//                Intent intent = new Intent(TitleActivity.this, MainActivity.class);
+//                startActivity(intent);
+//                break;
+//            default:
+//                break;
+//        }
+//    }
 }

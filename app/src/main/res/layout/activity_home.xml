@@ -64,7 +64,7 @@
             android:drawableTop="@drawable/tab_menu_more"
             android:gravity="center"
             android:paddingTop="8px"
-            android:text="更多"
+            android:text="程序控制"
             android:textColor="@drawable/tab_menu_more_text"
             android:textSize="12sp" />
 

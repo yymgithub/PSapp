@@ -69,17 +69,6 @@ public class FourFragment extends Fragment {
     }
 
     private void init(View view) {
-        txt1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    HomeActivity mainActivity = (HomeActivity) getActivity();
-                    mainActivity.gotoDownloadFragment();
-                } catch (Throwable e) {
-                    System.out.println();
-                }
-            }
-        });
 
         circleMenu = (CircleMenu) view.findViewById(R.id.circle_menu_file);
 
@@ -98,8 +87,8 @@ public class FourFragment extends Fragment {
                         switch (index) {
                             case 0:
                                 try {
-                                    HomeActivity mainActivity = (HomeActivity) getActivity();
-                                    mainActivity.gotoDownloadFragment();
+                                    HomeActivity homeActivity = (HomeActivity) getActivity();
+                                    homeActivity.gotoDownloadFragment(0);
                                 } catch (Throwable e) {
                                     break;
                                 }
@@ -107,15 +96,9 @@ public class FourFragment extends Fragment {
 
                             case 1:
                                 try {
-                                    Integer re = myApplication.getNowPsBench().getPsStop();
-                                    if (re == 0) {
-                                        Toast.makeText(getActivity(), "车辆已处于启动状态，不能再次启动", Toast.LENGTH_SHORT).show();
+                                    HomeActivity homeActivity = (HomeActivity) getActivity();
+                                    homeActivity.gotoDownloadFragment(1);
                                         break;
-                                    } else {
-                                        comName = "启动变频器";
-                                        myApplication.setComName(comName);
-                                        break;
-                                    }
                                 } catch (Throwable e) {
                                     break;
                                 }
