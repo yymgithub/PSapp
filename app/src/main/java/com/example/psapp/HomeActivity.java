@@ -2,26 +2,42 @@ package com.example.psapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private MyApplication myApplication = (MyApplication) this.getApplication();
+    private MyApplication myApplication;
     private TextView topBar;
     private TextView tabDeal;
     private TextView tabCom;
     private TextView tabMore;
     private TextView tabManc;
     private TextView mTitleTextView;
-
+    private ListView left_list_view;
     private FrameLayout ly_content;
+    protected static final int ERROR = 0;
+    protected static final int SUCCESS = 3;
+    protected static final int ERRORNET = 1;
 
     private FirstFragment f1;
     private SecondFragment f2;
@@ -29,9 +45,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private FourFragment f4;
     private FourFirstFragment f5;
     private FourSecondFragment f6;
+    private FourThirdFragment f7;
+    private MoreFourFragment f8;
     private FragmentManager fragmentManager;
     private TextView txt_signout;
     private TextView txt_backward;
+    private ArrayList list;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +59,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_home);
         bindView();
+
+        myApplication = (MyApplication) this.getApplication();
     }
 
     //UI组件初始化与事件绑定
@@ -50,15 +72,32 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         ly_content = (FrameLayout) findViewById(R.id.fragment_container);
         mTitleTextView = (TextView) findViewById(R.id.text_title);
         txt_signout = (TextView) findViewById(R.id.txt_signout);
-        txt_backward= (TextView) findViewById(R.id.txt_backward);
+        txt_backward = (TextView) findViewById(R.id.txt_backward);
+        left_list_view = (ListView) findViewById(R.id.left_listview);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout);
+        getSupportActionBar().hide();
+        initData();
+        ContentAdapter adapter = new ContentAdapter(this, list);
+        left_list_view.setAdapter(adapter);
         tabDeal.setOnClickListener(this);
         tabMore.setOnClickListener(this);
         tabManc.setOnClickListener(this);
         tabCom.setOnClickListener(this);
         txt_signout.setOnClickListener(this);
         txt_backward.setOnClickListener(this);
-        getSupportActionBar().hide();
+        leftListen();
 
+    }
+
+    //初始化左侧侧拉的数据
+    private void initData() {
+        list = new ArrayList<ContentModel>();
+        list.add(new ContentModel(R.mipmap.para_slide_menu_off, "查看参数示图", 1));
+        list.add(new ContentModel(R.mipmap.write_slide_menu_off, "记录试验数据", 2));
+        list.add(new ContentModel(R.mipmap.look_slide_menu_off, "查看试验数据", 3));
+        list.add(new ContentModel(R.mipmap.alarm_slide_menu_off, "查看设备报警", 4));
+        list.add(new ContentModel(R.mipmap.picture_slide_menu_off, "查看绘制曲线", 5));
+        list.add(new ContentModel(R.mipmap.look_slide_menu_off, "查看系统日志", 6));
     }
 
     //重置所有文本的选中状态
@@ -89,7 +128,63 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (f6 != null) {
             transaction.hide(f6);
         }
+        if (f7 != null) {
+            transaction.hide(f7);
+        }
+        if (f8 != null) {
+            transaction.hide(f8);
+        }
     }
+
+    //侧拉的监听事件
+    void leftListen() {
+        left_list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                hideAllFragment(transaction);
+                switch ((int) id) {
+                    case 1:
+                        mTitleTextView.setText("");
+                        txt_backward.setVisibility(View.VISIBLE);
+                        txt_signout.setVisibility(View.INVISIBLE);
+                        selected();
+                        if (f8 == null) {
+                            f8 = new MoreFourFragment();
+                            transaction.add(R.id.fragment_container, f8);
+                        } else {
+                            transaction.show(f8);
+                        }
+                        break;
+                    case 2:
+                        break;
+
+                    default:
+                        break;
+                }
+                transaction.commit();
+                drawerLayout.closeDrawer(Gravity.LEFT);
+            }
+        });
+    }
+
+
+    private Handler handler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case ERROR:
+                    Toast.makeText(HomeActivity.this, (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    break;
+                case ERRORNET:
+                    Toast.makeText(HomeActivity.this, "发送失败", Toast.LENGTH_SHORT).show();
+                    break;
+                case SUCCESS:
+                    Toast.makeText(HomeActivity.this, (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onClick(View v) {
@@ -144,7 +239,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.txt_signout:
                 Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+                signOut();
                 startActivity(intent);
+                signOut();
                 break;
             case R.id.txt_backward:
                 txt_backward.setVisibility(View.INVISIBLE);
@@ -165,36 +262,130 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-        public void gotoDownloadFragment(Integer cha) {    //去下载页面
+    public void gotoDownloadFragment(Integer cha) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         hideAllFragment(transaction);
 
-            switch (cha) {
-                case 0:
-                    mTitleTextView.setText("");
-                    txt_backward.setVisibility(View.VISIBLE);
-                    txt_signout.setVisibility(View.INVISIBLE);
-                    if (f5 == null) {
-                        f5 = new FourFirstFragment();
-                        transaction.add(R.id.fragment_container, f5);
-                    } else {
-                        transaction.show(f5);
-                    }
-                    transaction.commit();
-                    break;
-                case 1:
-                    mTitleTextView.setText("");
-                    txt_backward.setVisibility(View.VISIBLE);
-                    txt_signout.setVisibility(View.INVISIBLE);
-                    if (f6 == null) {
-                        f6 = new FourSecondFragment();
-                        transaction.add(R.id.fragment_container, f6);
-                    } else {
-                        transaction.show(f6);
-                    }
-                    transaction.commit();
+        switch (cha) {
+            case 0:
+                mTitleTextView.setText("");
+                txt_backward.setVisibility(View.VISIBLE);
+                txt_signout.setVisibility(View.INVISIBLE);
+                if (f5 == null) {
+                    f5 = new FourFirstFragment();
+                    transaction.add(R.id.fragment_container, f5);
+                } else {
+                    transaction.show(f5);
+                }
+                transaction.commit();
+                break;
+            case 1:
+                mTitleTextView.setText("");
+                txt_backward.setVisibility(View.VISIBLE);
+                txt_signout.setVisibility(View.INVISIBLE);
+                if (f6 == null) {
+                    f6 = new FourSecondFragment();
+                    transaction.add(R.id.fragment_container, f6);
+                } else {
+                    transaction.show(f6);
+                }
+                transaction.commit();
 
-                    break;
-            }
+                break;
+            case 2:
+                txt_backward.setVisibility(View.INVISIBLE);
+                txt_signout.setVisibility(View.VISIBLE);
+                selected();
+                tabMore.setSelected(true);
+                mTitleTextView.setText("程序控制");
+                if (f4 == null) {
+                    f4 = new FourFragment();
+                    transaction.add(R.id.fragment_container, f4);
+                } else {
+                    transaction.show(f4);
+                }
+                transaction.commit();
+
+                break;
+            case 3:
+                txt_backward.setVisibility(View.INVISIBLE);
+                txt_signout.setVisibility(View.VISIBLE);
+                selected();
+                tabMore.setSelected(true);
+                mTitleTextView.setText("程序控制");
+                if (f4 == null) {
+                    f4 = new FourFragment();
+                    transaction.add(R.id.fragment_container, f4);
+                } else {
+                    transaction.remove(f4);
+                    f4 = new FourFragment();
+                    transaction.add(R.id.fragment_container, f4);
+                    transaction.show(f4);
+                }
+                transaction.commit();
+
+                break;
+            case 4:
+                mTitleTextView.setText("");
+                txt_backward.setVisibility(View.VISIBLE);
+                txt_signout.setVisibility(View.INVISIBLE);
+                if (f7 == null) {
+                    f7 = new FourThirdFragment();
+                    transaction.add(R.id.fragment_container, f7);
+                } else {
+                    transaction.show(f7);
+                }
+                transaction.commit();
+
+                break;
+        }
     }
+
+    void signOut() {
+        new Thread() {
+            public void run() {
+                try {
+                    String path = "http://192.168.1.107:8080/home/signoutDevice?psId=" + myApplication.getNowPsBench().getPsId();
+                    URL url = new URL(path);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; KB974487)");
+                    int code = conn.getResponseCode();
+                    if (code == 200) {
+                        InputStream is = conn.getInputStream();
+                        String result = StreamTools.readInputStream(is);
+                        JSONObject resultJson = new JSONObject(result);
+                        boolean success = resultJson.getBoolean("success");
+                        if (success) {
+                            Message msg = Message.obtain();
+                            msg.what = SUCCESS;
+                            String message = resultJson.getString("message");
+                            msg.obj = message;
+                            handler.sendMessage(msg);
+
+                        } else {
+                            Message msg = Message.obtain();
+                            msg.what = ERROR;
+                            String message = resultJson.getString("message");
+                            msg.obj = message;
+                            handler.sendMessage(msg);
+                        }
+                    } else {
+                        Message msg = Message.obtain();
+                        msg.what = ERRORNET;
+                        handler.sendMessage(msg);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Message msg = Message.obtain();
+                    msg.what = ERRORNET;
+                    handler.sendMessage(msg);
+                }
+            }
+
+            ;
+        }.start();
+    }
+
+
 }

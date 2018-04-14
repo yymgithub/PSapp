@@ -3,6 +3,7 @@ package com.example.psapp;
 import android.app.Application;
 
 import com.example.psapp.bean.PsBench;
+import com.example.psapp.bean.PsFile;
 import com.example.psapp.bean.User;
 
 /**
@@ -19,6 +20,15 @@ public class MyApplication extends Application {
     private User user;
     private PsBench nowPsBench;
     private String comName;
+    private PsFile psFile;
+
+    public PsFile getPsFile() {
+        return psFile;
+    }
+
+    public void setPsFile(PsFile psFile) {
+        this.psFile = psFile;
+    }
 
     public String getComName() {
         return comName;

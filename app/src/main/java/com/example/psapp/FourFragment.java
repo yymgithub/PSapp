@@ -3,17 +3,28 @@ package com.example.psapp;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.psapp.bean.PsFile;
 import com.hitomi.cmlibrary.CircleMenu;
 import com.hitomi.cmlibrary.OnMenuSelectedListener;
 import com.hitomi.cmlibrary.OnMenuStatusChangeListener;
+
+import org.json.JSONObject;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
 
 /**
  * Created by 永远有多远 on 2018/4/12.
@@ -23,9 +34,24 @@ public class FourFragment extends Fragment {
     private MyApplication myApplication;
     private CircleMenu circleMenu;
     private TextView txt1, txt2, txt3, txt4, txt5, txt6;
+    private  PsFile psFile;
+    private Integer nowfileState=0;
     protected static final int ERROR = 0;
     protected static final int SUCCESS = 3;
     protected static final int ERRORNET = 1;
+
+    protected int RUNNING = 100;
+    protected int PAUSE = 101;
+    protected int STOP = 102;
+    protected int SUC = 103;
+
+    private int nowState = 99;//未开始
+
+    private int totalTime = 180000;
+//    private int totalTime = 5000;
+    private int nowTotalTime = 0;
+
+    private TextView tv_state;
 
     public FourFragment() {
 
@@ -65,12 +91,95 @@ public class FourFragment extends Fragment {
         txt6.setCompoundDrawables(drawable6, null, null, null);//只放左边
         myApplication = (MyApplication) this.getActivity().getApplication();
         init(view);
+
+        //接受参数，运行文件
+        initFile();
+
+
         return view;
+    }
+
+    private Handler handler1 = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case ERROR:
+                    Toast.makeText(getActivity(), (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    break;
+                case ERRORNET:
+                    Toast.makeText(getActivity(), "发送失败", Toast.LENGTH_SHORT).show();
+                    break;
+                case SUCCESS:
+                    break;
+            }
+        }
+    };
+     void updateFile(){
+         new Thread() {
+             public void run() {
+                 try {
+                     String path = "http://192.168.1.107:8080/home/program/upateFileState?fileId=" + psFile.getFileId() + "&fileState=" + nowfileState;
+                     URL url = new URL(path);
+                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                     conn.setRequestMethod("GET");
+                     conn.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; KB974487)");
+                     int code = conn.getResponseCode();
+                     if (code == 200) {
+                         InputStream is = conn.getInputStream();
+                         String result = StreamTools.readInputStream(is);
+                         JSONObject resultJson = new JSONObject(result);
+                         boolean success = resultJson.getBoolean("success");
+                         if (success) {
+                             Message msg = Message.obtain();
+                             msg.what = SUCCESS;
+                             String message = resultJson.getString("message");
+                             msg.obj = message;
+                             handler1.sendMessage(msg);
+
+                         } else {
+                             Message msg = Message.obtain();
+                             msg.what = ERROR;
+                             String message = resultJson.getString("message");
+                             msg.obj = message;
+                             handler1.sendMessage(msg);
+                         }
+                     } else {
+                         Message msg = Message.obtain();
+                         msg.what = ERRORNET;
+                         handler1.sendMessage(msg);
+                     }
+                 } catch (Exception e) {
+                     e.printStackTrace();
+                     Message msg = Message.obtain();
+                     msg.what = ERRORNET;
+                     handler1.sendMessage(msg);
+                 }
+             }
+             ;
+         }.start();
+     }
+
+
+    private void initFile() {
+        nowfileState=1;
+        //获取传过来的psFile，判断，若获取不到，不执行后面的运行文件
+        psFile = myApplication.getPsFile();
+        if (psFile != null) {
+            myApplication.setPsFile(null);
+            //运行文件
+            runFile();
+            tv_state.setText("程控运行");
+            updateFile();
+
+        }
     }
 
     private void init(View view) {
 
         circleMenu = (CircleMenu) view.findViewById(R.id.circle_menu_file);
+
+        tv_state = (TextView) view.findViewById(R.id.textview_nowFileState);
+        tv_state.setText("空闲状态");
+
 
         circleMenu.setMainMenu(Color.parseColor("#CDCDCD"), R.mipmap.icon_menu, R.mipmap.icon_cancel)
                 .addSubMenu(Color.parseColor("#8A8A8A"), R.mipmap.file)
@@ -96,54 +205,66 @@ public class FourFragment extends Fragment {
 
                             case 1:
                                 try {
-                                    HomeActivity homeActivity = (HomeActivity) getActivity();
-                                    homeActivity.gotoDownloadFragment(1);
-                                        break;
+                                    if (nowState != 99){
+                                        Toast.makeText(getActivity(),"已有文件正在执行，请稍后重试",Toast.LENGTH_LONG).show();
+                                    }else {
+                                        HomeActivity homeActivity = (HomeActivity) getActivity();
+                                        homeActivity.gotoDownloadFragment(1);
+                                    }
+                                    break;
                                 } catch (Throwable e) {
                                     break;
                                 }
                             case 2:
                                 try {
-                                    Integer re = myApplication.getNowPsBench().getPsStop();
-                                    if (re == 1) {
-                                        Toast.makeText(getActivity(), "车辆已处于关闭状态，不能再次停止", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    } else {
-                                        comName = "关闭变频器";
-                                        myApplication.setComName(comName);
-                                        break;
+                                    if (nowState == RUNNING){
+                                        nowState = PAUSE;
+                                        nowfileState=2;
+                                        updateFile();
+                                        Toast.makeText(getActivity(),"已暂停",Toast.LENGTH_LONG).show();
+                                        tv_state.setText("程控暂停");
+                                    }else {
+                                        Toast.makeText(getActivity(),"未有文件正在执行，无法暂停",Toast.LENGTH_LONG).show();
                                     }
+                                    break;
                                 } catch (Throwable e) {
                                     break;
                                 }
 
                             case 3:
-
                                 try {
-                                    Integer re = myApplication.getNowPsBench().getPsAlarm();
-                                    if (re == 1) {
-                                        Toast.makeText(getActivity(), "车辆已处于报警状态，不能再次报警", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    } else {
-                                        comName = "报警";
-                                        myApplication.setComName(comName);
-                                        break;
+                                    if (nowState == PAUSE){
+                                        nowState = RUNNING;
+                                        nowfileState=1;
+                                        updateFile();
+                                        Toast.makeText(getActivity(),"已继续",Toast.LENGTH_LONG).show();
+                                        tv_state.setText("程控运行");
+                                    }else {
+                                        Toast.makeText(getActivity(),"未有文件正在暂停，无法继续",Toast.LENGTH_LONG).show();
                                     }
+                                    break;
                                 } catch (Throwable e) {
                                     break;
                                 }
 
                             case 4:
                                 try {
-                                    Integer re = myApplication.getNowPsBench().getPsAlarm();
-                                    if (re == 0) {
-                                        Toast.makeText(getActivity(), "车辆未报警，不能操作", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    } else {
-                                        comName = "报警复位";
-                                        myApplication.setComName(comName);
-                                        break;
+                                    if (nowState == RUNNING || nowState == PAUSE){
+                                        nowState = STOP;
+                                        Toast.makeText(getActivity(),"已停止",Toast.LENGTH_LONG).show();
+                                        tv_state.setText("空闲状态");
+                                    }else{
+                                        Toast.makeText(getActivity(),"未有文件正在执行，无法停止",Toast.LENGTH_LONG).show();
                                     }
+                                    break;
+                                } catch (Throwable e) {
+                                    break;
+                                }
+                            case 5:
+                                try {
+                                    HomeActivity homeActivity = (HomeActivity) getActivity();
+                                    homeActivity.gotoDownloadFragment(4);
+                                    break;
                                 } catch (Throwable e) {
                                     break;
                                 }
@@ -163,5 +284,73 @@ public class FourFragment extends Fragment {
             }
 
         });
+    }
+
+    private Handler handler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case ERROR:
+                    Toast.makeText(getActivity(), (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    break;
+                case 103:
+                    //运行完成，更改数据库状态
+                    nowfileState=3;
+                    updateFile();
+                    //恢复nowstate的状态
+                    nowState = 99;
+                    tv_state.setText("空闲状态");
+                    break;
+                case 102:
+                    //停止状态，更新数据库
+                    nowfileState=0;
+                    updateFile();
+                    //恢复nowstate的状态
+                    nowState = 99;
+                    break;
+            }
+        }
+    };
+
+
+    void runFile() {
+
+        new Thread() {
+            public void run() {
+                try {
+                    nowState = RUNNING;
+                    while (true) {
+                        sleep(1000);
+                        if (nowState == RUNNING) {
+                            nowTotalTime += 1000;
+                            if (nowTotalTime > totalTime) {
+                                Message msg = Message.obtain();
+                                msg.what = SUC;
+                                handler.sendMessage(msg);
+                                break;
+                            }
+                        } else if (nowState == STOP) {
+                            Message msg = Message.obtain();
+                            msg.what = STOP;
+                            handler.sendMessage(msg);
+                            break;
+                        } else if (nowState == PAUSE) {
+                            continue;
+                        } else {
+                            Message msg = Message.obtain();
+                            msg.what = ERROR;
+                            handler.sendMessage(msg);
+                            break;
+                        }
+                        System.out.println("我的状态：" + nowState);
+                    }
+                } catch (Throwable e) {
+                    Message msg = Message.obtain();
+                    msg.what = ERROR;
+                    handler.sendMessage(msg);
+                }
+            }
+
+            ;
+        }.start();
     }
 }
