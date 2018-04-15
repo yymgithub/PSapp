@@ -1,6 +1,5 @@
 package com.example.psapp;
 
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,11 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.example.psapp.bean.PsParameter;
+import com.example.psapp.bean.PsDeviceAlarm;
+import com.example.psapp.bean.PsLog;
 
 import org.json.JSONObject;
 
@@ -24,32 +23,35 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    private String context;
-    private TextView mTextView;
-    private ListView listView;
-    private Handler mHandler;
-    private SwipeRefreshLayout swipeLayout;
+/**
+ * Created by 永远有多远 on 2018/4/15.
+ */
+
+public class MoreSixFragment  extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+
     protected static final int ERROR = 0;
     protected static final int SUCCESS = 3;
     protected static final int ERRORNET = 1;
 
+    private ListView listViewLog;
     private MyApplication myApplication;
+    private SwipeRefreshLayout swipeLayout;
 
-    public FirstFragment(String context) {
-        this.context = context;
+
+    public MoreSixFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.first_fragment, container, false);
-        listView = (ListView) view.findViewById(R.id.list_view);
+        View view = inflater.inflate(R.layout.more_six_fragment, container, false);
+        listViewLog = (ListView) view.findViewById(R.id.list_view_log);
         myApplication = (MyApplication) this.getActivity().getApplication();
-        getData();
         //初始化下拉刷新
-        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_log);
         swipeLayout.setColorSchemeColors(Color.GRAY);
         swipeLayout.setOnRefreshListener(this);
+        getLogData();
+
         return view;
     }
 
@@ -63,19 +65,18 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     Toast.makeText(getActivity(), "发送失败", Toast.LENGTH_SHORT).show();
                     break;
                 case SUCCESS:
-                    List<PsParameter> psParameterList = (List<PsParameter>) msg.obj;
-                    listView.setAdapter(new ParaAdapter(getActivity(), R.layout.parameter_item, psParameterList));
+                    List<PsLog> psLogList = (List<PsLog>) msg.obj;
+                    listViewLog.setAdapter(new LogAdapter(getActivity(), R.layout.log_item, psLogList));
                     break;
             }
         }
     };
 
-    public void getData() {
+    void getLogData() {
         new Thread() {
             public void run() {
                 try {
-                    Integer psId = myApplication.getNowPsBench().getPsId();
-                    String path = "http://192.168.1.107:8080/home/appGetPara?psId=" + psId;
+                    String path = "http://192.168.1.107:8080/home/more/getLog";
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
@@ -88,17 +89,11 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                         boolean success = resultJson.getBoolean("success");
                         if (success) {
                             JSONObject data = (JSONObject) resultJson.get("data");
-                            String psParameterListString = data.getString("psParameterList");
-                            List<PsParameter> psParameterList = JSON.parseArray(psParameterListString, PsParameter.class);
-                            JSONObject psBench = (JSONObject) data.get("psBench");
-                            Integer psStop = psBench.getInt("psStop");
-                            Integer psAlarm = psBench.getInt("psAlarm");
-                            myApplication.setPsParameterList(psParameterList);
-                            myApplication.getNowPsBench().setPsStop(psStop);
-                            myApplication.getNowPsBench().setPsAlarm(psAlarm);
+                            String psLogListString = data.getString("psLogList");
+                            List<PsLog> psLogList = JSON.parseArray(psLogListString, PsLog.class);
                             Message msg = Message.obtain();
                             msg.what = SUCCESS;
-                            msg.obj = psParameterList;
+                            msg.obj = psLogList;
                             handler.sendMessage(msg);
 
                         } else {
@@ -124,25 +119,14 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             ;
         }.start();
     }
-//    private void myDialog(String promt,int icon,int time){
-//        Intent i =new Intent(getActivity(),ndialog.class);
-//        Bundle b =new Bundle();
-//        b.putString("promt", promt);
-//        b.putInt("icon", icon);
-//        b.putInt("time", time);
-//        i.putExtra("data", b);
-//        startActivity(i);
-//
-//    }
 
     @Override
     public void onRefresh() {
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 swipeLayout.setRefreshing(false);
-                getData();
+                getLogData();
             }
         }, 500);
-
     }
 }

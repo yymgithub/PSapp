@@ -1,6 +1,5 @@
 package com.example.psapp;
 
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,46 +9,49 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.example.psapp.bean.PsParameter;
+import com.example.psapp.bean.PsFile;
+import com.example.psapp.bean.PsTestRecord;
 
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
-public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    private String context;
-    private TextView mTextView;
-    private ListView listView;
-    private Handler mHandler;
-    private SwipeRefreshLayout swipeLayout;
+/**
+ * Created by 永远有多远 on 2018/4/15.
+ */
+
+public class MoreThreeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     protected static final int ERROR = 0;
     protected static final int SUCCESS = 3;
     protected static final int ERRORNET = 1;
 
+    private ListView listViewTestRecord;
     private MyApplication myApplication;
-
-    public FirstFragment(String context) {
-        this.context = context;
+    private SwipeRefreshLayout swipeLayout;
+    List<PsTestRecord>  list=new ArrayList<>();
+    public MoreThreeFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.first_fragment, container, false);
-        listView = (ListView) view.findViewById(R.id.list_view);
+        View view = inflater.inflate(R.layout.more_three_fragment, container, false);
+        listViewTestRecord = (ListView) view.findViewById(R.id.list_view__test_record);
         myApplication = (MyApplication) this.getActivity().getApplication();
-        getData();
         //初始化下拉刷新
-        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_test_record);
         swipeLayout.setColorSchemeColors(Color.GRAY);
         swipeLayout.setOnRefreshListener(this);
+        getTestRecordData();
+        change();
         return view;
     }
 
@@ -63,19 +65,20 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     Toast.makeText(getActivity(), "发送失败", Toast.LENGTH_SHORT).show();
                     break;
                 case SUCCESS:
-                    List<PsParameter> psParameterList = (List<PsParameter>) msg.obj;
-                    listView.setAdapter(new ParaAdapter(getActivity(), R.layout.parameter_item, psParameterList));
+                    List<PsTestRecord> psTestRecordList = (List<PsTestRecord>) msg.obj;
+                    list=psTestRecordList;
+                    listViewTestRecord.setAdapter(new TestRecordAdapter(getActivity(), R.layout.test_record_item, psTestRecordList));
                     break;
             }
         }
     };
 
-    public void getData() {
+    void getTestRecordData() {
         new Thread() {
             public void run() {
                 try {
                     Integer psId = myApplication.getNowPsBench().getPsId();
-                    String path = "http://192.168.1.107:8080/home/appGetPara?psId=" + psId;
+                    String path = "http://192.168.1.107:8080/home/more/getTestRecord";
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
@@ -88,17 +91,11 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                         boolean success = resultJson.getBoolean("success");
                         if (success) {
                             JSONObject data = (JSONObject) resultJson.get("data");
-                            String psParameterListString = data.getString("psParameterList");
-                            List<PsParameter> psParameterList = JSON.parseArray(psParameterListString, PsParameter.class);
-                            JSONObject psBench = (JSONObject) data.get("psBench");
-                            Integer psStop = psBench.getInt("psStop");
-                            Integer psAlarm = psBench.getInt("psAlarm");
-                            myApplication.setPsParameterList(psParameterList);
-                            myApplication.getNowPsBench().setPsStop(psStop);
-                            myApplication.getNowPsBench().setPsAlarm(psAlarm);
+                            String psTestRecordListString = data.getString("psTestRecordList");
+                            List<PsTestRecord> psTestRecordList = JSON.parseArray(psTestRecordListString, PsTestRecord.class);
                             Message msg = Message.obtain();
                             msg.what = SUCCESS;
-                            msg.obj = psParameterList;
+                            msg.obj = psTestRecordList;
                             handler.sendMessage(msg);
 
                         } else {
@@ -124,25 +121,36 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             ;
         }.start();
     }
-//    private void myDialog(String promt,int icon,int time){
-//        Intent i =new Intent(getActivity(),ndialog.class);
-//        Bundle b =new Bundle();
-//        b.putString("promt", promt);
-//        b.putInt("icon", icon);
-//        b.putInt("time", time);
-//        i.putExtra("data", b);
-//        startActivity(i);
-//
-//    }
+
 
     @Override
     public void onRefresh() {
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 swipeLayout.setRefreshing(false);
-                getData();
+                getTestRecordData();
             }
         }, 500);
 
     }
+
+    void change() {
+
+        listViewTestRecord.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            //list点击事件
+            @Override
+            public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
+                 PsTestRecord psTestRecord = (PsTestRecord) list.get(p3);
+                myApplication.setPsTestRecord(psTestRecord);
+                //跳转界面，并且把psTestRecord传过去
+                HomeActivity homeActivity = (HomeActivity) getActivity();
+                homeActivity.gotoDownloadFragment(5);
+
+            }
+
+
+        });
+    }
+
+
 }

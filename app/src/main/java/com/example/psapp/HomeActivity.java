@@ -17,12 +17,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.psapp.bean.PsParameter;
+
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -47,11 +50,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private FourSecondFragment f6;
     private FourThirdFragment f7;
     private MoreFourFragment f8;
+    private MoreTestDetailFragment f11;
+    private MoreThreeFragment f9;
+    private MoreSixFragment f10;
     private FragmentManager fragmentManager;
     private TextView txt_signout;
     private TextView txt_backward;
     private ArrayList list;
     private DrawerLayout drawerLayout;
+    private String str=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +141,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (f8 != null) {
             transaction.hide(f8);
         }
+        if (f9 != null) {
+            transaction.hide(f9);
+        }
+        if (f11 != null) {
+            transaction.hide(f11);
+        }
+        if (f10 != null) {
+            transaction.hide(f10);
+        }
     }
 
     //侧拉的监听事件
@@ -158,6 +174,62 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         }
                         break;
                     case 2:
+                        str="";
+                        List<PsParameter> list=myApplication.getPsParameterList();
+
+                        for(int i=0;i<list.size();i++){
+                            str+=list.get(i).getParaName()+":"+list.get(i).getParaValue()+list.get(i).getParaUnit()+";";
+                        }
+                        setTestRecord();
+
+                        break;
+                    case 3:
+                        mTitleTextView.setText("");
+                        txt_backward.setVisibility(View.VISIBLE);
+                        txt_signout.setVisibility(View.INVISIBLE);
+                        selected();
+                        if (f9 == null) {
+                            f9 = new MoreThreeFragment();
+                            transaction.add(R.id.fragment_container, f9);
+                        } else {
+                            transaction.show(f9);
+                        }
+                        break;
+                    case 4:
+                        mTitleTextView.setText("");
+                        txt_backward.setVisibility(View.VISIBLE);
+                        txt_signout.setVisibility(View.INVISIBLE);
+                        selected();
+                        if (f8 == null) {
+                            f8 = new MoreFourFragment();
+                            transaction.add(R.id.fragment_container, f8);
+                        } else {
+                            transaction.show(f8);
+                        }
+                        break;
+                    case 5:
+                        mTitleTextView.setText("");
+                        txt_backward.setVisibility(View.VISIBLE);
+                        txt_signout.setVisibility(View.INVISIBLE);
+                        selected();
+                        if (f8 == null) {
+                            f8 = new MoreFourFragment();
+                            transaction.add(R.id.fragment_container, f8);
+                        } else {
+                            transaction.show(f8);
+                        }
+                        break;
+                    case 6:
+                        mTitleTextView.setText("");
+                        txt_backward.setVisibility(View.VISIBLE);
+                        txt_signout.setVisibility(View.INVISIBLE);
+                        selected();
+                        if (f10 == null) {
+                            f10 = new MoreSixFragment();
+                            transaction.add(R.id.fragment_container, f10);
+                        } else {
+                            transaction.show(f10);
+                        }
                         break;
 
                     default:
@@ -338,7 +410,81 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 transaction.commit();
 
                 break;
+            case 5:
+                mTitleTextView.setText("");
+                txt_backward.setVisibility(View.VISIBLE);
+                txt_signout.setVisibility(View.INVISIBLE);
+                if (f11 == null) {
+                    f11 = new MoreTestDetailFragment();
+                    transaction.add(R.id.fragment_container, f11);
+                } else {
+                    transaction.show(f11);
+                }
+                transaction.commit();
+
+                break;
         }
+    }
+
+    private Handler handler1 = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case ERROR:
+                    Toast.makeText(HomeActivity.this, (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    break;
+                case ERRORNET:
+                    Toast.makeText(HomeActivity.this, "发送失败", Toast.LENGTH_SHORT).show();
+                    break;
+                case SUCCESS:
+                    Toast.makeText(HomeActivity.this, (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+    void setTestRecord(){
+        new Thread() {
+            public void run() {
+                try {
+                    String path = "http://192.168.1.107:8080/home/more/setTestRecord?psId=" + myApplication.getNowPsBench().getPsId()+"&testPara="+str;
+                    URL url = new URL(path);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; KB974487)");
+                    int code = conn.getResponseCode();
+                    if (code == 200) {
+                        InputStream is = conn.getInputStream();
+                        String result = StreamTools.readInputStream(is);
+                        JSONObject resultJson = new JSONObject(result);
+                        boolean success = resultJson.getBoolean("success");
+                        if (success) {
+                            Message msg = Message.obtain();
+                            msg.what = SUCCESS;
+                            String message = resultJson.getString("message");
+                            msg.obj = message;
+                            handler1.sendMessage(msg);
+
+                        } else {
+                            Message msg = Message.obtain();
+                            msg.what = ERROR;
+                            String message = resultJson.getString("message");
+                            msg.obj = message;
+                            handler1.sendMessage(msg);
+                        }
+                    } else {
+                        Message msg = Message.obtain();
+                        msg.what = ERRORNET;
+                        handler1.sendMessage(msg);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Message msg = Message.obtain();
+                    msg.what = ERRORNET;
+                    handler1.sendMessage(msg);
+                }
+            }
+
+            ;
+        }.start();
     }
 
     void signOut() {
