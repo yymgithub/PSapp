@@ -93,6 +93,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         txt_signout.setOnClickListener(this);
         txt_backward.setOnClickListener(this);
         leftListen();
+        fistSelect();
 
     }
 
@@ -181,7 +182,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                             str+=list.get(i).getParaName()+":"+list.get(i).getParaValue()+list.get(i).getParaUnit()+";";
                         }
                         setTestRecord();
-
                         break;
                     case 3:
                         mTitleTextView.setText("");
@@ -252,11 +252,25 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(HomeActivity.this, "发送失败", Toast.LENGTH_SHORT).show();
                     break;
                 case SUCCESS:
-                    Toast.makeText(HomeActivity.this, (String) msg.obj, Toast.LENGTH_SHORT).show();
+                   
                     break;
             }
         }
     };
+    void fistSelect(){
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        hideAllFragment(transaction);
+        tabDeal.setSelected(true);
+        mTitleTextView.setText("查看参数");
+        if (f1 == null) {
+            f1 = new FirstFragment("第一个Fragment");
+            transaction.add(R.id.fragment_container, f1);
+        } else {
+            transaction.show(f1);
+        }
+        transaction.commit();
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -437,6 +451,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     break;
                 case SUCCESS:
                     Toast.makeText(HomeActivity.this, (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    fistSelect();
                     break;
             }
         }
