@@ -53,6 +53,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private MoreTestDetailFragment f11;
     private MoreThreeFragment f9;
     private MoreSixFragment f10;
+    private MoreFirstFragment f12;
     private FragmentManager fragmentManager;
     private TextView txt_signout;
     private TextView txt_backward;
@@ -151,6 +152,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (f10 != null) {
             transaction.hide(f10);
         }
+        if (f12 != null) {
+            transaction.hide(f12);
+        }
     }
 
     //侧拉的监听事件
@@ -163,16 +167,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 hideAllFragment(transaction);
                 switch ((int) id) {
                     case 1:
-                        mTitleTextView.setText("");
-                        txt_backward.setVisibility(View.VISIBLE);
-                        txt_signout.setVisibility(View.INVISIBLE);
-                        selected();
-                        if (f8 == null) {
-                            f8 = new MoreFourFragment();
-                            transaction.add(R.id.fragment_container, f8);
-                        } else {
-                            transaction.show(f8);
-                        }
+                        Intent intent = new Intent(HomeActivity.this, PicActivity.class);
+                        startActivity(intent);
                         break;
                     case 2:
                         str="";
@@ -252,7 +248,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(HomeActivity.this, "发送失败", Toast.LENGTH_SHORT).show();
                     break;
                 case SUCCESS:
-                   
+
                     break;
             }
         }
@@ -433,6 +429,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     transaction.add(R.id.fragment_container, f11);
                 } else {
                     transaction.show(f11);
+                }
+                transaction.commit();
+
+                break;
+            case 6:
+                txt_backward.setVisibility(View.INVISIBLE);
+                txt_signout.setVisibility(View.VISIBLE);
+                selected();
+                tabDeal.setSelected(true);
+                mTitleTextView.setText("查看参数");
+                if (f1 == null) {
+                    f1 = new FirstFragment("第一个Fragment");
+                    transaction.add(R.id.fragment_container, f1);
+                } else {
+                    transaction.show(f1);
                 }
                 transaction.commit();
 
