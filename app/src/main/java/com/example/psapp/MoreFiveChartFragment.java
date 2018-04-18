@@ -176,6 +176,11 @@ public class MoreFiveChartFragment  extends Fragment implements SwipeRefreshLayo
 
     @Override
     public void onRefresh() {
-
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                swipeLayout.setRefreshing(false);
+                getChartData();
+            }
+        }, 500);
     }
 }

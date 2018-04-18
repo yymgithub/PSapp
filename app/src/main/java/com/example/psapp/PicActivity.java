@@ -2,9 +2,11 @@ package com.example.psapp;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
@@ -26,7 +28,7 @@ import java.util.List;
  * Created by 永远有多远 on 2018/4/16.
  */
 
-public class PicActivity extends AppCompatActivity implements View.OnClickListener {
+public class PicActivity extends AppCompatActivity implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener{
     private TextView pic_load1_speed;
     private TextView pic_load1_power;
     private TextView pic_load1_niuju;
@@ -42,6 +44,7 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
     protected static final int SUCCESS = 3;
     protected static final int ERRORNET = 1;
     private MyApplication myApplication;
+    private SwipeRefreshLayout swipeLayout;
 
 
     @Override
@@ -70,6 +73,10 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
             pic_tmp= (TextView) findViewById(R.id.txt_tep_pic);
             pic_kaidu= (TextView) findViewById(R.id.txt_kaidu_pic);
             myApplication= (MyApplication) this.getApplication();
+            //初始化下拉刷新
+            swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_img);
+            swipeLayout.setColorSchemeColors(Color.GRAY);
+            swipeLayout.setOnRefreshListener(this);
 
             getData();
         } catch (Throwable e) {
@@ -160,7 +167,7 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
             public void run() {
                 try {
                     Integer psId = myApplication.getNowPsBench().getPsId();
-                    String path = "http://192.168.1.107:8080/home/appGetPara?psId=" + psId;
+                    String path = "http://10.96.49.255:8080/home/appGetPara?psId=" + psId;
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
@@ -208,5 +215,15 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
 
             ;
         }.start();
+    }
+
+    @Override
+    public void onRefresh() {
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                swipeLayout.setRefreshing(false);
+                getData();
+            }
+        }, 500);
     }
 }
