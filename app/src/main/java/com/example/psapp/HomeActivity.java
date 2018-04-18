@@ -53,7 +53,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private MoreTestDetailFragment f11;
     private MoreThreeFragment f9;
     private MoreSixFragment f10;
-    private MoreFirstFragment f12;
+    private MoreFiveChartFragment f12;
     private FragmentManager fragmentManager;
     private TextView txt_signout;
     private TextView txt_backward;
@@ -208,11 +208,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         txt_backward.setVisibility(View.VISIBLE);
                         txt_signout.setVisibility(View.INVISIBLE);
                         selected();
-                        if (f8 == null) {
-                            f8 = new MoreFourFragment();
-                            transaction.add(R.id.fragment_container, f8);
+                        if (f12 == null) {
+                            f12 = new MoreFiveChartFragment();
+                            transaction.add(R.id.fragment_container, f12);
                         } else {
-                            transaction.show(f8);
+                            transaction.show(f12);
                         }
                         break;
                     case 6:
@@ -471,7 +471,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         new Thread() {
             public void run() {
                 try {
-                    String path = "http://192.168.1.107:8080/home/more/setTestRecord?psId=" + myApplication.getNowPsBench().getPsId()+"&testPara="+str;
+                    String path = "http://10.96.49.255:8080/home/more/setTestRecord?psId=" + myApplication.getNowPsBench().getPsId()+"&testPara="+str;
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
@@ -517,7 +517,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         new Thread() {
             public void run() {
                 try {
-                    String path = "http://192.168.1.107:8080/home/signoutDevice?psId=" + myApplication.getNowPsBench().getPsId();
+                    String path = "http://10.96.49.255:8080/home/signoutDevice?psId=" + myApplication.getNowPsBench().getPsId();
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");

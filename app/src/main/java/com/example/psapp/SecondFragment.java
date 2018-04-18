@@ -221,15 +221,15 @@ public class SecondFragment extends Fragment {
                     String comName = myApplication.getComName();
                     String path = null;
                     if (comName.equals("停车")) {
-                        path = "http://192.168.1.107:8080/home/command/stop?psId=" + psId + "&phoneId=" + phoneId + "&comName=" + comName;
+                        path = "http://10.96.49.255:8080/home/command/stop?psId=" + psId + "&phoneId=" + phoneId + "&comName=" + comName;
                     } else if (comName.equals("启动变频器")) {
-                        path = "http://192.168.1.107:8080/home/command/startUp?psId=" + psId + "&phoneId=" + phoneId + "&comName=" + comName;
+                        path = "http://10.96.49.255:8080/home/command/startUp?psId=" + psId + "&phoneId=" + phoneId + "&comName=" + comName;
                     } else if (comName.equals("关闭变频器")) {
-                        path = "http://192.168.1.107:8080/home/command/stop?psId=" + psId + "&phoneId=" + phoneId + "&comName=" + comName;
+                        path = "http://10.96.49.255:8080/home/command/stop?psId=" + psId + "&phoneId=" + phoneId + "&comName=" + comName;
                     } else if (comName.equals("报警")) {
-                        path = "http://192.168.1.107:8080/home/command/alarmUp?psId=" + psId + "&phoneId=" + phoneId + "&comName=" + comName;
+                        path = "http://10.96.49.255:8080/home/command/alarmUp?psId=" + psId + "&phoneId=" + phoneId + "&comName=" + comName;
                     } else if (comName.equals("报警复位")) {
-                        path = "http://192.168.1.107:8080/home/command/alarmOff?psId=" + psId + "&phoneId=" + phoneId + "&comName=" + comName;
+                        path = "http://10.96.49.255:8080/home/command/alarmOff?psId=" + psId + "&phoneId=" + phoneId + "&comName=" + comName;
                     }
 
                     URL url = new URL(path);

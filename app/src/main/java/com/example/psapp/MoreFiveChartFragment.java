@@ -1,6 +1,5 @@
 package com.example.psapp;
 
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,46 +9,62 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.example.psapp.bean.PsChart;
 import com.example.psapp.bean.PsParameter;
+import com.github.mikephil.charting.charts.LineChart;
 
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
-public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    private String context;
-    private TextView mTextView;
-    private ListView listView;
-    private Handler mHandler;
-    private SwipeRefreshLayout swipeLayout;
+import lecho.lib.hellocharts.gesture.ContainerScrollType;
+import lecho.lib.hellocharts.gesture.ZoomType;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.AxisValue;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.ValueShape;
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.view.LineChartView;
+
+/**
+ * Created by 永远有多远 on 2018/4/17.
+ */
+
+public class MoreFiveChartFragment  extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+
     protected static final int ERROR = 0;
     protected static final int SUCCESS = 3;
     protected static final int ERRORNET = 1;
 
+    //绘制折线图所用
+    private LineChart lineChart;
+    private List<PsChart> list=new ArrayList<>();
     private MyApplication myApplication;
-
-    public FirstFragment(String context) {
-        this.context = context;
+    private SwipeRefreshLayout swipeLayout;
+    private LineChartManager lineChartManager1;
+    public MoreFiveChartFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.first_fragment, container, false);
-        listView = (ListView) view.findViewById(R.id.list_view);
+        View view = inflater.inflate(R.layout.more_five_chart_fragment, container, false);
         myApplication = (MyApplication) this.getActivity().getApplication();
-        getData();
         //初始化下拉刷新
-        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_chart);
         swipeLayout.setColorSchemeColors(Color.GRAY);
         swipeLayout.setOnRefreshListener(this);
+        lineChart = (LineChart)view.findViewById(R.id.line_chart1);
+        lineChartManager1 = new LineChartManager(lineChart);
+        getChartData();
         return view;
     }
 
@@ -63,19 +78,58 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     Toast.makeText(getActivity(), "发送失败", Toast.LENGTH_SHORT).show();
                     break;
                 case SUCCESS:
-                    List<PsParameter> psParameterList = (List<PsParameter>) msg.obj;
-                    listView.setAdapter(new ParaAdapter(getActivity(), R.layout.parameter_item, psParameterList));
+                    List<PsChart> psChartList = (List<PsChart>) msg.obj;
+                    list=psChartList;
+                    //设置x轴的数据
+                    ArrayList<Float> xValues = new ArrayList<>();
+                    for (int i = 0; i <= 12; i++) {
+                        xValues.add((float) i);
+                    }
+
+                    //设置y轴的数据()
+                    List<List<Float>> yValues = new ArrayList<>();
+                    for (int i = 0; i < 2; i++) {
+                        List<Float> yValue = new ArrayList<>();
+                        if(i==0){
+                            for (int j = 0; j <= 12; j++) {
+                                yValue.add((float) (list.get(j).getDriveChart()));
+                            }
+                            yValues.add(yValue);
+                        }
+                        if(i==1){
+                            for (int j = 0; j <= 12; j++) {
+                                yValue.add((float) (list.get(j).getTmpChart()));
+                            }
+                            yValues.add(yValue);
+                        }
+
+                    }
+
+                    //颜色集合
+                    List<Integer> colours = new ArrayList<>();
+                    colours.add(Color.GREEN);
+                    colours.add(Color.CYAN);
+
+                    //线的名字集合
+                    List<String> names = new ArrayList<>();
+                    names.add("驱动转速");
+                    names.add("变速箱温度");
+
+                    //创建多条折线的图表
+                    lineChartManager1.showLineChart(xValues, yValues, names, colours);
+                    lineChartManager1.setDescription("温度");
+                    lineChartManager1.setYAxis(3000, 0, 11);
+                    lineChartManager1.setXAxis(12,0,11);
                     break;
             }
         }
     };
-
-    public void getData() {
+    void getChartData(){
         new Thread() {
             public void run() {
                 try {
                     Integer psId = myApplication.getNowPsBench().getPsId();
-                    String path = "http://10.96.49.255:8080/home/appGetPara?psId=" + psId;
+                    String path = "http://10.96.49.255:8080/home/more/getChart?psId=" + psId;
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
@@ -88,17 +142,11 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                         boolean success = resultJson.getBoolean("success");
                         if (success) {
                             JSONObject data = (JSONObject) resultJson.get("data");
-                            String psParameterListString = data.getString("psParameterList");
-                            List<PsParameter> psParameterList = JSON.parseArray(psParameterListString, PsParameter.class);
-                            JSONObject psBench = (JSONObject) data.get("psBench");
-                            Integer psStop = psBench.getInt("psStop");
-                            Integer psAlarm = psBench.getInt("psAlarm");
-                            myApplication.setPsParameterList(psParameterList);
-                            myApplication.getNowPsBench().setPsStop(psStop);
-                            myApplication.getNowPsBench().setPsAlarm(psAlarm);
+                            String psChartListString = data.getString("psChartList");
+                            List<PsChart> psChartList = JSON.parseArray(psChartListString, PsChart.class);
                             Message msg = Message.obtain();
                             msg.what = SUCCESS;
-                            msg.obj = psParameterList;
+                            msg.obj = psChartList;
                             handler.sendMessage(msg);
 
                         } else {
@@ -124,25 +172,10 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             ;
         }.start();
     }
-//    private void myDialog(String promt,int icon,int time){
-//        Intent i =new Intent(getActivity(),ndialog.class);
-//        Bundle b =new Bundle();
-//        b.putString("promt", promt);
-//        b.putInt("icon", icon);
-//        b.putInt("time", time);
-//        i.putExtra("data", b);
-//        startActivity(i);
-//
-//    }
+
 
     @Override
     public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                swipeLayout.setRefreshing(false);
-                getData();
-            }
-        }, 500);
 
     }
 }
