@@ -167,7 +167,7 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
             public void run() {
                 try {
                     Integer psId = myApplication.getNowPsBench().getPsId();
-                    String path = "http://10.96.49.255:8080/home/appGetPara?psId=" + psId;
+                    String path = "http://47.106.32.2:80/home/appGetPara?psId=" + psId;
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");

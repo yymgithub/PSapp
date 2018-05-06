@@ -261,7 +261,7 @@ public class ThreeFirstFragment extends Fragment {
                         try {
                             Integer psId = myApplication.getNowPsBench().getPsId();
                             String phoneId=myApplication.getUser().getPhoneId();
-                            String path = "http://192.168.1.107:8080/home/manc/drive"+psDrive.toString();
+                            String path = "http://47.106.32.2:80/home/manc/drive"+psDrive.toString();
                             URL url = new URL(path);
                             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                             conn.setRequestMethod("GET");

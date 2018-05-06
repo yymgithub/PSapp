@@ -109,7 +109,7 @@ public class ThreeThirdFragemnt extends Fragment  implements SwipeRefreshLayout.
                 try {
                     Integer psId = myApplication.getNowPsBench().getPsId();
                     String phoneId=myApplication.getUser().getPhoneId();
-                    String path = "http://192.168.1.107:8080/home/manc/getTemp?psId="+myApplication.getNowPsBench().getPsId();
+                    String path = "http://47.106.32.2:80/home/manc/getTemp?psId="+myApplication.getNowPsBench().getPsId();
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
@@ -192,7 +192,7 @@ public class ThreeThirdFragemnt extends Fragment  implements SwipeRefreshLayout.
                         try {
                             Integer psId = myApplication.getNowPsBench().getPsId();
                             String phoneId=myApplication.getUser().getPhoneId();
-                            String path = "http://192.168.1.107:8080/home/manc/setTemp?psId="+myApplication.getNowPsBench().getPsId()+"&paraValue="+Double.valueOf(input_target_tmp.getText().toString())+"&phoneId="+myApplication.getUser().getPhoneId();
+                            String path = "http://47.106.32.2:80/home/manc/setTemp?psId="+myApplication.getNowPsBench().getPsId()+"&paraValue="+Double.valueOf(input_target_tmp.getText().toString())+"&phoneId="+myApplication.getUser().getPhoneId();
                             URL url = new URL(path);
                             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                             conn.setRequestMethod("GET");
@@ -260,7 +260,7 @@ public class ThreeThirdFragemnt extends Fragment  implements SwipeRefreshLayout.
                         try {
                             Integer psId = myApplication.getNowPsBench().getPsId();
                             String phoneId=myApplication.getUser().getPhoneId();
-                            String path = "http://192.168.1.107:8080/home/manc/setTemp1?psId="+myApplication.getNowPsBench().getPsId()+"&paraValue="+Double.valueOf(input_target_tmp2.getText().toString())+"&phoneId="+myApplication.getUser().getPhoneId();
+                            String path = "http://47.106.32.2:80/home/manc/setTemp1?psId="+myApplication.getNowPsBench().getPsId()+"&paraValue="+Double.valueOf(input_target_tmp2.getText().toString())+"&phoneId="+myApplication.getUser().getPhoneId();
                             URL url = new URL(path);
                             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                             conn.setRequestMethod("GET");

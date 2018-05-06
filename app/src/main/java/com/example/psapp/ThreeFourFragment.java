@@ -130,7 +130,7 @@ public class ThreeFourFragment extends Fragment implements SwipeRefreshLayout.On
             public void run() {
                 try {
                     Integer psId = myApplication.getNowPsBench().getPsId();
-                    String path = "http://192.168.1.107:8080/home/manc/getGear?psId="+myApplication.getNowPsBench().getPsId();
+                    String path = "http://47.106.32.2:80/home/manc/getGear?psId="+myApplication.getNowPsBench().getPsId();
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
@@ -247,7 +247,7 @@ public class ThreeFourFragment extends Fragment implements SwipeRefreshLayout.On
                         try {
                             Integer psId = myApplication.getNowPsBench().getPsId();
                             String phoneId=myApplication.getUser().getPhoneId();
-                            String path = "http://192.168.1.107:8080/home/manc/setFault?psId="+myApplication.getNowPsBench().getPsId()+"&faultName="+faultName+"&phoneId="+myApplication.getUser().getPhoneId();
+                            String path = "http://47.106.32.2:80/home/manc/setFault?psId="+myApplication.getNowPsBench().getPsId()+"&faultName="+faultName+"&phoneId="+myApplication.getUser().getPhoneId();
                             URL url = new URL(path);
                             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                             conn.setRequestMethod("GET");
@@ -312,7 +312,7 @@ public class ThreeFourFragment extends Fragment implements SwipeRefreshLayout.On
             public void run() {
                 try {
                     Integer psId = myApplication.getNowPsBench().getPsId();
-                    String path = "http://192.168.1.107:8080/home/manc/setGear"+psGear.toString();
+                    String path = "http://47.106.32.2:80/home/manc/setGear"+psGear.toString();
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");

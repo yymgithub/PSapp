@@ -107,7 +107,7 @@ public class FourFirstFragment extends Fragment {
                     new Thread() {
                         public void run() {
                             try {
-                                String path = "http://192.168.1.107:8080/home/program/setFile" + psDataFile.toString();
+                                String path = "http://47.106.32.2:80/home/program/setFile" + psDataFile.toString();
                                 URL url = new URL(path);
                                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                                 conn.setRequestMethod("GET");

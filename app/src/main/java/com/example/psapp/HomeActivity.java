@@ -59,7 +59,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private TextView txt_backward;
     private ArrayList list;
     private DrawerLayout drawerLayout;
-    private String str=null;
+    private String str = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,11 +171,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         startActivity(intent);
                         break;
                     case 2:
-                        str="";
-                        List<PsParameter> list=myApplication.getPsParameterList();
+                        str = "";
+                        List<PsParameter> list = myApplication.getPsParameterList();
 
-                        for(int i=0;i<list.size();i++){
-                            str+=list.get(i).getParaName()+":"+list.get(i).getParaValue()+list.get(i).getParaUnit()+";";
+                        for (int i = 0; i < list.size(); i++) {
+                            str += list.get(i).getParaName() + ":" + list.get(i).getParaValue() + list.get(i).getParaUnit() + ";";
                         }
                         setTestRecord();
                         break;
@@ -253,7 +253,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     };
-    void fistSelect(){
+
+    void fistSelect() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         hideAllFragment(transaction);
         tabDeal.setSelected(true);
@@ -467,11 +468,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     };
-    void setTestRecord(){
+
+    void setTestRecord() {
         new Thread() {
             public void run() {
                 try {
-                    String path = "http://10.96.49.255:8080/home/more/setTestRecord?psId=" + myApplication.getNowPsBench().getPsId()+"&testPara="+str;
+                    String path = "http://47.106.32.2:80/home/more/setTestRecord?psId=" + myApplication.getNowPsBench().getPsId() + "&testPara=" + str;
+                    path = path.replace("%", "%25");
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
@@ -517,7 +520,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         new Thread() {
             public void run() {
                 try {
-                    String path = "http://10.96.49.255:8080/home/signoutDevice?psId=" + myApplication.getNowPsBench().getPsId();
+                    String path = "http://47.106.32.2:80/home/signoutDevice?psId=" + myApplication.getNowPsBench().getPsId();
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");

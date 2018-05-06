@@ -82,7 +82,7 @@ public class FourSecondFragment extends Fragment implements SwipeRefreshLayout.O
             public void run() {
                 try {
                     Integer psId = myApplication.getNowPsBench().getPsId();
-                    String path = "http://192.168.1.107:8080/home/program/getFile?psId=" + psId;
+                    String path = "http://47.106.32.2:80/home/program/getFile?psId=" + psId;
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");

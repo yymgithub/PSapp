@@ -149,7 +149,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 public void run() {
                     try {
                         this.sleep(2000);
-                        String path = "http://10.96.49.255:8080/user/appLogin?phoneId=" + et_phone.getText().toString().trim() + "&password=" + et_password.getText().toString().trim();
+                        String path = "http://47.106.32.2:80/user/appLogin?phoneId=" + et_phone.getText().toString().trim() + "&password=" + et_password.getText().toString().trim();
                         URL url = new URL(path);
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                         conn.setRequestMethod("GET");

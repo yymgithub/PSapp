@@ -117,7 +117,7 @@ public class FourFragment extends Fragment {
          new Thread() {
              public void run() {
                  try {
-                     String path = "http://192.168.1.107:8080/home/program/upateFileState?fileId=" + psFile.getFileId() + "&fileState=" + nowfileState;
+                     String path = "http://47.106.32.2:80/home/program/upateFileState?fileId=" + psFile.getFileId() + "&fileState=" + nowfileState;
                      URL url = new URL(path);
                      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                      conn.setRequestMethod("GET");

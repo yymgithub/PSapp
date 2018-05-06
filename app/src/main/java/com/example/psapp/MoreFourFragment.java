@@ -76,7 +76,7 @@ public void handleMessage(android.os.Message msg) {
         new Thread() {
                 public void run() {
         try {
-        String path = "http://192.168.1.107:8080/home/more/getAlarmDevice";
+        String path = "http://47.106.32.2:80/home/more/getAlarmDevice";
         URL url = new URL(path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");

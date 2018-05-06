@@ -75,11 +75,11 @@ public class FirstFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             public void run() {
                 try {
                     Integer psId = myApplication.getNowPsBench().getPsId();
-                    String path = "http://10.96.49.255:8080/home/appGetPara?psId=" + psId;
+                    String path = "http://47.106.32.2:80/home/appGetPara?psId=" + psId;
                     URL url = new URL(path);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
-                    conn.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; KB974487)");
+                    conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0");
                     int code = conn.getResponseCode();
                     if (code == 200) {
                         InputStream is = conn.getInputStream();
